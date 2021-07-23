@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="144">
+<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="149">
  <tileset firstgid="1" name="Ground" tilewidth="32" tileheight="32" tilecount="7" columns="7">
   <image source="ground-tile-set.png" trans="ff00ff" width="224" height="32"/>
  </tileset>
@@ -76,7 +76,12 @@
  </objectgroup>
  <objectgroup id="8" name="SpikesObjectsLayer" locked="1"/>
  <objectgroup id="9" name="CrumbleObjectsLayer" locked="1">
-  <object id="111" x="384" y="160" width="192" height="32"/>
+  <object id="111" x="384" y="160" width="32" height="32"/>
+  <object id="144" x="416" y="160" width="32" height="32"/>
+  <object id="145" x="448" y="160" width="32" height="32"/>
+  <object id="146" x="480" y="160" width="32" height="32"/>
+  <object id="147" x="512" y="160" width="32" height="32"/>
+  <object id="148" x="544" y="160" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="10" name="ChangeEnemyDirectionObjectsLayer" locked="1">
   <object id="140" x="345.489" y="497.599" width="4.71658" height="14.1497"/>

@@ -21,8 +21,6 @@ public class TaskManager {
     public Task diedTwentyTimes;
     public int taskCount;
 
-    private AssetManager manager;
-
     private GapGame2 game;
 
     public TaskManager(GapGame2 game) {
@@ -56,7 +54,7 @@ public class TaskManager {
 
     }
 
-    public void checkForCompleted(){
+    public void checkForCompleted() {
         if (!tenLevelsComplete.completed && game.stateManager.completed >= 10) {
             tenLevelsComplete.completed = true;
             game.uiManager.showMessage(tenLevelsComplete.message);
@@ -95,14 +93,14 @@ public class TaskManager {
         }
     }//check for completed
 
-    public void resetProgress(){
-        for(Task task: tasks){
+    public void resetProgress() {
+        for (Task task : tasks) {
             task.completed = false;
         }
     }
 }//task manager
 
-class Task{
+class Task {
     public String message;
     public String taskIconURL;
     public boolean completed;

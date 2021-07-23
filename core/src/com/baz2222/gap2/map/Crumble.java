@@ -1,5 +1,6 @@
 package com.baz2222.gap2.map;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.baz2222.gap2.GapGame2;
@@ -8,7 +9,7 @@ public class Crumble extends Actor {
     private GapGame2 game;
     private BodyDef bodyDef;
     private FixtureDef fixtureDef;
-    private Fixture fixture;
+    public Fixture fixture;
     private PolygonShape shape;
     public Body body;
 
@@ -29,5 +30,10 @@ public class Crumble extends Actor {
         fixtureDef.density = 0f;
         fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
+    }
+
+    public TiledMapTileLayer.Cell getCell(){
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.mapManager.map.getLayers().get("GroundTilesLayer");
+        return layer.getCell((int)(body.getPosition().x * game.scale / 32), (int)(body.getPosition().y * game.scale / 32));
     }
 }

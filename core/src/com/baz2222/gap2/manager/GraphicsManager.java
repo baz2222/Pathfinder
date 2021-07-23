@@ -8,8 +8,11 @@ public class GraphicsManager {
     private GapGame2 game;
     private AssetManager manager;
 
-    public Texture menuBtnTex, playMenuBtnTex, backBtnTex, selectWorldBtnTex, selectLevelBtnTex, leftArrowBtnTex, rightArrowTex;
+    public Texture menuBtnTex, playMenuBtnTex, backBtnTex, selectWorldBtnTex, selectLevelBtnTex;
+    public Texture menuCheckedBtnTex, playMenuCheckedBtnTex, backCheckedBtnTex, selectWorldCheckedBtnTex, selectLevelCheckedBtnTex;
+    public Texture leftArrowBtnTex, rightArrowTex;
     public Texture jumpBuffTex, shieldBuffTex, bombBuffTex;
+    public Texture jumpTrailTex, shieldTrailTex, bombTrailTex;
 
     public GraphicsManager(GapGame2 game) {
         this.game = game;
@@ -24,12 +27,23 @@ public class GraphicsManager {
         manager.load("select-world-btn.png", Texture.class);
         manager.load("select-level-btn.png", Texture.class);
         manager.load("back-btn.png", Texture.class);
+
+        manager.load("menu-checked-btn.png", Texture.class);
+        manager.load("play-menu-checked-btn.png", Texture.class);
+        manager.load("select-world-checked-btn.png", Texture.class);
+        manager.load("select-level-checked-btn.png", Texture.class);
+        manager.load("back-checked-btn.png", Texture.class);
+
         manager.load("left-arrow-btn.png", Texture.class);
         manager.load("right-arrow-btn.png", Texture.class);
 
         manager.load("jump-buff.png", Texture.class);
         manager.load("bomb-buff.png", Texture.class);
         manager.load("shield-buff.png", Texture.class);
+
+        manager.load("jump-trail.png", Texture.class);
+        manager.load("bomb-trail.png", Texture.class);
+        manager.load("shield-trail.png", Texture.class);
 
         manager.finishLoading();
     }
@@ -40,11 +54,22 @@ public class GraphicsManager {
         backBtnTex = manager.get("back-btn.png", Texture.class);
         selectWorldBtnTex = manager.get("select-world-btn.png", Texture.class);
         selectLevelBtnTex = manager.get("select-level-btn.png", Texture.class);
+
+        menuCheckedBtnTex = manager.get("menu-checked-btn.png", Texture.class);
+        playMenuCheckedBtnTex = manager.get("play-menu-checked-btn.png", Texture.class);
+        backCheckedBtnTex = manager.get("back-checked-btn.png", Texture.class);
+        selectWorldCheckedBtnTex = manager.get("select-world-checked-btn.png", Texture.class);
+        selectLevelCheckedBtnTex = manager.get("select-level-checked-btn.png", Texture.class);
+
         leftArrowBtnTex = manager.get("left-arrow-btn.png", Texture.class);
         rightArrowTex = manager.get("right-arrow-btn.png", Texture.class);
 
         jumpBuffTex = manager.get("jump-buff.png", Texture.class);
         bombBuffTex = manager.get("bomb-buff.png", Texture.class);
         shieldBuffTex = manager.get("shield-buff.png", Texture.class);
+
+        jumpTrailTex = manager.get("jump-trail.png", Texture.class);
+        bombTrailTex = manager.get("bomb-trail.png", Texture.class);
+        shieldTrailTex = manager.get("shield-trail.png", Texture.class);
     }
 }

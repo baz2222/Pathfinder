@@ -1,9 +1,11 @@
 package com.baz2222.gap2.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.JointEdge;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.utils.Array;
 import com.baz2222.gap2.GapGame2;
 import com.baz2222.gap2.character.Enemy;
@@ -24,6 +26,7 @@ public class LevelOverScreen extends GameScreen {
 
     @Override
     public void render(float delta) {
+        handleInput();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.box2DManager.renderer.render();
@@ -31,6 +34,21 @@ public class LevelOverScreen extends GameScreen {
         game.uiManager.batch.setProjectionMatrix(game.uiManager.box2DCamera.combined);
         game.box2DManager.renderer.setView(game.uiManager.box2DCamera);
         game.uiManager.stage.draw();
+    }
+
+    public void handleInput(){
+        //move right
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+            game.inputManager.nextISA();
+        //move left
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+            game.inputManager.previousISA();
+        //press current button
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+        }//enter
     }
 
     @Override

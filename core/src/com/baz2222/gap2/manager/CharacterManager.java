@@ -78,7 +78,7 @@ public class CharacterManager {
         enemies2.clear();
     }
 
-    public void onPalyerWarp() {
+    public void onPlayerWarp() {
         if (player.body.getPosition().x * game.scale < 0) {
             player.body.setTransform((player.body.getPosition().x * game.scale + game.width) / game.scale, player.body.getPosition().y, 0);
             game.stateManager.wrapped++;

@@ -11,7 +11,9 @@ import com.baz2222.gap2.character.Enemy;
 import com.baz2222.gap2.character.Enemy2;
 import com.baz2222.gap2.character.Player;
 import com.baz2222.gap2.item.Buff;
+import com.baz2222.gap2.item.Bump;
 import com.baz2222.gap2.item.Exit;
+import com.baz2222.gap2.item.Switch;
 
 import java.util.Iterator;
 
@@ -82,6 +84,9 @@ public class LevelManager {
         game.characterManager.player = new Player(game, "player");
         game.itemManager.exit = new Exit(game, "exit");
 
+        for(Vector2 coords : game.levelManager.switchesCoords){
+            game.itemManager.switches.add(new Switch(game, coords.x, coords.y,"switch",game.itemManager.exit));
+        }
         for(Vector2 coords : game.levelManager.enemiesCoords){
             game.characterManager.enemies.add(new Enemy(game, "enemy", coords.x, coords.y, true));
         }
@@ -97,17 +102,27 @@ public class LevelManager {
         for(Vector2 coords : game.levelManager.buffShieldsCoords){
             game.itemManager.buffs.add(new Buff(game, coords.x, coords.y, "shield"));
         }
+        for(Vector2 coords : game.levelManager.bumpsCoords){
+            game.itemManager.bumps.add(new Bump(game, coords.x, coords.y, "bump"));
+        }
         //===============================add actors to stage===================================
         game.uiManager.stage.addActor(game.itemManager.exit);
         game.uiManager.stage.addActor(game.characterManager.player);
         for(Enemy enemy : game.characterManager.enemies){
             game.uiManager.stage.addActor(enemy);
         }
+        for(Switch sw : game.itemManager.switches){
+            game.uiManager.stage.addActor(sw);
+            game.itemManager.exit.setVisible(false);
+        }
         for(Enemy2 enemy2 : game.characterManager.enemies2){
             game.uiManager.stage.addActor(enemy2);
         }
         for(Buff buff : game.itemManager.buffs){
             game.uiManager.stage.addActor(buff);
+        }
+        for(Bump bump : game.itemManager.bumps){
+            game.uiManager.stage.addActor(bump);
         }
     }//load level actors
 

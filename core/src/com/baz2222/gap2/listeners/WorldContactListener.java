@@ -5,7 +5,11 @@ import com.baz2222.gap2.GapGame2;
 import com.baz2222.gap2.character.Enemy;
 import com.baz2222.gap2.character.Enemy2;
 import com.baz2222.gap2.character.Player;
+import com.baz2222.gap2.item.Buff;
+import com.baz2222.gap2.item.Bump;
 import com.baz2222.gap2.item.Exit;
+import com.baz2222.gap2.item.Switch;
+import com.baz2222.gap2.map.Crumble;
 import com.baz2222.gap2.map.Direction;
 import com.baz2222.gap2.map.Spike;
 
@@ -35,6 +39,46 @@ public class WorldContactListener implements ContactListener {
                 game.itemManager.onPlayerHitExit();
             }
         }//player with exit
+
+        //player with switch
+        if (fixA.getUserData() != null && fixB.getUserData() != null) {
+            if (fixA.getUserData().getClass() == Player.class && fixB.getUserData().getClass() == Switch.class) {
+                game.itemManager.onPlayerHitSwitch((Switch) fixB.getUserData());
+            }
+            if (fixB.getUserData().getClass() == Player.class && fixA.getUserData().getClass() == Switch.class) {
+                game.itemManager.onPlayerHitSwitch((Switch) fixA.getUserData());
+            }
+        }//player with switch
+
+        //player with bump
+        if (fixA.getUserData() != null && fixB.getUserData() != null) {
+            if (fixA.getUserData().getClass() == Player.class && fixB.getUserData().getClass() == Bump.class) {
+                game.itemManager.onPlayerHitBump((Bump) fixB.getUserData());
+            }
+            if (fixB.getUserData().getClass() == Player.class && fixA.getUserData().getClass() == Bump.class) {
+                game.itemManager.onPlayerHitBump((Bump) fixA.getUserData());
+            }
+        }//player with bump
+
+        //player with buff
+        if (fixA.getUserData() != null && fixB.getUserData() != null) {
+            if (fixA.getUserData().getClass() == Player.class && fixB.getUserData().getClass() == Buff.class) {
+                game.itemManager.onPlayerHitBuff((Buff) fixB.getUserData());
+            }
+            if (fixB.getUserData().getClass() == Player.class && fixA.getUserData().getClass() == Buff.class) {
+                game.itemManager.onPlayerHitBuff((Buff) fixA.getUserData());
+            }
+        }//player with buff
+
+        //player with crumble
+        if (fixA.getUserData() != null && fixB.getUserData() != null) {
+            if (fixA.getUserData().getClass() == Player.class && fixB.getUserData().getClass() == Crumble.class) {
+                game.mapManager.onPlayerHitCrumble((Crumble) fixB.getUserData());
+            }
+            if (fixB.getUserData().getClass() == Player.class && fixA.getUserData().getClass() == Crumble.class) {
+                game.mapManager.onPlayerHitCrumble((Crumble) fixA.getUserData());
+            }
+        }//player with crumble
 
         //player with spike
         if (fixA.getUserData() != null && fixB.getUserData() != null) {

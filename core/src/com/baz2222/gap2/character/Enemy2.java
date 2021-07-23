@@ -179,14 +179,14 @@ public class Enemy2 extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if(game.gamePaused == false) {
-            if (fixture.getFilterData().categoryBits == game.box2DManager.removedBit) {
-                body.setActive(false);
+            if (fixture.getFilterData().categoryBits == game.box2DManager.removedBit && body.isActive()) {
                 if (body.getPosition().y * game.scale < game.height + 96)  // +player height
                 {
                     body.setTransform(body.getPosition().x, body.getPosition().y + Gdx.graphics.getDeltaTime() * 2, 0);
                     setPosition((body.getPosition().x - getWidth() / 2) * game.scale, (body.getPosition().y - getHeight() * 0.35f) * game.scale);
                     batch.draw(getFrame(), getX(), getY());
                 } else {//fly to the top
+                    body.setActive(false);
                     die();
                 }//die animation end - next restart level
             } else {

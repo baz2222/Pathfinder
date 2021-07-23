@@ -3,6 +3,7 @@ package com.baz2222.gap2.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.baz2222.gap2.GapGame2;
 import com.baz2222.gap2.tools.GameScreen;
 
@@ -15,14 +16,23 @@ public class LevelScreen extends GameScreen {
 
     public void handleInput() {
         //jump
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || (Gdx.input.isTouched() && Gdx.input.getDeltaY() < -10))
-            game.characterManager.player.jump();
-        //move right
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || (Gdx.input.isTouched() && Gdx.input.getDeltaY() < -10)) {
+            if (game.characterManager.player.ability == "jump")
+                game.characterManager.player.jump(1.5f);
+            else
+                game.characterManager.player.jump(1f);
+        }//move right
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || (Gdx.input.isTouched() && Gdx.input.getDeltaX() > 10))
             game.characterManager.player.runRight();
         //move left
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || (Gdx.input.isTouched() && Gdx.input.getDeltaX() < -10))
             game.characterManager.player.runLeft();
+        //pause
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.uiManager.pauseBtn.fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+        }
     }
 
     @Override
@@ -91,6 +101,9 @@ public class LevelScreen extends GameScreen {
         game.uiManager.createLevelScreenTable();
         //======================
         game.stateManager.saveState();
+        //======================
+        if (game.levelManager.tutorialMessage != "")
+            game.uiManager.showMessage(game.levelManager.tutorialMessage);
     }
 
     @Override

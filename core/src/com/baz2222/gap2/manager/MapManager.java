@@ -3,10 +3,12 @@ package com.baz2222.gap2.manager;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.baz2222.gap2.GapGame2;
@@ -31,6 +33,8 @@ public class MapManager {
     public Array<Crumble> crumbles;
     public Array<Spike> spikes;
 
+    private Filter filter;
+
     public MapManager(GapGame2 game) {
         this.game = game;
         mapActorBounds = new Rectangle();
@@ -40,6 +44,7 @@ public class MapManager {
         crumbles = new Array<>();
         directions = new Array<>();
         spikes = new Array<>();
+        filter = new Filter();
     }
 
     public void loadLevelMap(int world, int level){
@@ -68,6 +73,15 @@ public class MapManager {
 
     public void unloadLevelMap(){
         game.mapManager.map = null;
+    }
+
+    public void onPlayerHitCrumble(Crumble crumble){
+        if(game.characterManager.player.ability == "bomb") {
+            filter.categoryBits = game.box2DManager.removedBit;
+            crumble.fixture.setFilterData(filter);
+            crumble.getCell().setTile(null);
+            game.soundManager.playSound("bomb",false);
+        }//if bomb ability
     }
 
     public void onPlayerHitSpike(){

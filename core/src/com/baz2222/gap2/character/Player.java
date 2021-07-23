@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 import com.baz2222.gap2.GapGame2;
+import com.baz2222.gap2.item.Trail;
 import com.baz2222.gap2.manager.CharacterManager;
 import com.baz2222.gap2.tools.GameScreen;
 
@@ -19,7 +20,6 @@ public class Player extends Actor {
     private Texture texture;
     public CharacterManager.State currState, prevState;
     private boolean runRight;
-    public float jumpPower;
     private Array<TextureRegion> frames;
     private Animation<TextureRegion> playerIdle, playerRun, playerJump, playerFall, playerDie;
     private BodyDef bodyDef;
@@ -30,6 +30,7 @@ public class Player extends Actor {
     private PolygonShape shape;
     private TextureRegion region;
     public String ability;
+    public Trail trail;
 
     public Player(GapGame2 game, String name) {
         this.game = game;
@@ -42,7 +43,6 @@ public class Player extends Actor {
         currState = CharacterManager.State.idle;
         prevState = CharacterManager.State.idle;
         runRight = true;
-        jumpPower = 1f;
         ability = "simple";
         frames = new Array<>();
         //run animation
@@ -80,22 +80,36 @@ public class Player extends Actor {
         fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.isSensor = false;
-        fixtureDef.filter.maskBits = (short) (game.box2DManager.exitBit | game.box2DManager.groundBit | game.box2DManager.spikeBit | game.box2DManager.enemyBit | game.box2DManager.enemy2Bit);//collides with ---
+        fixtureDef.filter.maskBits = (short) (game.box2DManager.buffBit |
+                game.box2DManager.exitBit |
+                game.box2DManager.groundBit |
+                game.box2DManager.spikeBit |
+                game.box2DManager.switchBit |
+                game.box2DManager.bumpBit |
+                game.box2DManager.enemyBit |
+                game.box2DManager.crumbleBit |
+                game.box2DManager.enemy2Bit);//collides with ---
         fixtureDef.filter.categoryBits = game.box2DManager.playerBit;
         fixtureDef.restitution = 0f;
         fixtureDef.friction = 0.5f;
         fixtureDef.density = 0f;
         fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
+        filter = fixtureDef.filter;
         setBounds(0, 0, 64 / game.scale, 64 / game.scale);
     }//constructor
 
-    public void jump() {
+    public void jump(float jumpPowerMultiplier) {
         if (currState != CharacterManager.State.jump && currState != CharacterManager.State.fall) {
-            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPower), body.getWorldCenter(), true);
+            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPowerMultiplier), body.getWorldCenter(), true);
             game.soundManager.playSound("jump", false);
         }//if not jumping
     }//jump
+
+    public void forceJump(float jumpPowerMultiplier) {
+            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPowerMultiplier), body.getWorldCenter(), true);
+            game.soundManager.playSound("jump", false);
+    }//forceJump
 
     public void runRight() {
         if (body.getLinearVelocity().x <= 2)
@@ -167,14 +181,18 @@ public class Player extends Actor {
         game.screenManager.levelScreen.onClose();
         game.screenManager.levelOverScreen.type = "fail";
         game.setScreen(game.screenManager.levelOverScreen);
-        ((GameScreen)game.getScreen()).onOpen();
+        ((GameScreen) game.getScreen()).onOpen();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if(game.gamePaused == false) {
+        if (game.gamePaused == false) {
             if (fixture.getFilterData().categoryBits == game.box2DManager.removedBit) {
                 body.setActive(false);
+                if (trail != null) {
+                    trail.remove();
+                    trail = null;
+                }
                 if (body.getPosition().y * game.scale < game.height + 64)  // +player height
                 {
                     body.setTransform(body.getPosition().x, body.getPosition().y + Gdx.graphics.getDeltaTime() * 2, 0);
@@ -185,11 +203,23 @@ public class Player extends Actor {
                 }//die animation end - next restart level
             } else {
                 setPosition((body.getPosition().x - getWidth() / 2) * game.scale, (body.getPosition().y - getHeight() * 0.43f) * game.scale);
-                game.characterManager.onPalyerWarp();
+                game.characterManager.onPlayerWarp();
                 batch.draw(getFrame(), getX(), getY());
+                //======================trail======================
+                if (trail != null && trailTimer >= 0.3f) {
+                    trail.remove();
+                    trail = null;
+                    trail = new Trail(game, ability);
+                    trailTimer = 0f;
+                }
+                if (trail != null) {
+                    trail.draw(batch, 0f);
+                }
+                //======================trail======================
             }//if not dead
             stepTimer += Gdx.graphics.getDeltaTime();
-            if(stepTimer >= 0.3f && (currState == CharacterManager.State.left || currState == CharacterManager.State.right)){
+            trailTimer += Gdx.graphics.getDeltaTime();
+            if (stepTimer >= 0.3f && (currState == CharacterManager.State.left || currState == CharacterManager.State.right)) {
                 game.soundManager.playSound("step", false);
                 stepTimer = 0;
             }//stepping sound effect

@@ -34,6 +34,7 @@ public class SoundManager {
         manager.load("sounds/fall.mp3", Sound.class);
         manager.load("sounds/die.mp3", Sound.class);
         manager.load("sounds/break.mp3", Sound.class);
+        manager.load("sounds/bomb.mp3", Sound.class);
 
         manager.finishLoading();
     }

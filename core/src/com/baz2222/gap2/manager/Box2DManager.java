@@ -19,7 +19,7 @@ public class Box2DManager {
     public short enemyBit = 128;
     public short enemy2Bit = 256;
     public short directionBit = 512;
-    public short lampBit = 1024;
+    public short switchBit = 1024;
     public short buffBit = 2048;
     public short bumpBit = 4096;
 

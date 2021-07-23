@@ -18,14 +18,16 @@ public class Buff extends Actor {
     private BodyDef bodyDef;
     public Body body;
     private FixtureDef fixtureDef;
-    private Fixture fixture;
+    public Fixture fixture;
     private PolygonShape shape;
     private float timer;
+    public Filter filter;
 
     public Buff(GapGame2 game, float buffX, float buffY, String name) {
         this.game = game;
         setName(name);
         timer = 0;
+        filter = new Filter();
         if(name == "bomb"){
             texture = game.graphicsManager.bombBuffTex;
         }
@@ -48,6 +50,7 @@ public class Buff extends Actor {
         fixtureDef.filter.categoryBits = game.box2DManager.buffBit;
         fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
+        filter = fixtureDef.filter;
         frames = new Array<>();
         for (int i = 0; i < 7; i++) {
             frames.add(new TextureRegion(texture, i * 64, 0, 64, 64));
