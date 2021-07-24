@@ -1,5 +1,6 @@
 package com.baz2222.gap2.listeners;
 
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -8,24 +9,27 @@ import com.baz2222.gap2.tools.GameScreen;
 
 import static com.baz2222.gap2.GapGame2.log;
 
-public class FindInputBtnListener extends InputListener {
+public class ChangeDeviceInputBtnListener extends InputListener {
     private GapGame2 game;
-    public FindInputBtnListener(GapGame2 game) {
+    public ChangeDeviceInputBtnListener(GapGame2 game) {
         this.game = game;
     }
 
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        log("input back button pressed");
-        game.screenManager.inputScreen.onClose();
-        game.setScreen(game.screenManager.menuScreen);
-        ((GameScreen)game.getScreen()).onOpen();
+        log("change device button pressed");
+        if(!Controllers.getControllers().isEmpty()){
+            game.screenManager.inputScreen.deviceListInFocus = true;
+        }
         return super.touchDown(event, x, y, pointer, button);
     }
 
     @Override
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         super.touchUp(event, x, y, pointer, button);
+        if(Controllers.getControllers().isEmpty()){
+            game.inputManager.setCurrentISA(1);
+        }
     }
 
     @Override

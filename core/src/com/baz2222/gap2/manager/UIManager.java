@@ -2,6 +2,8 @@ package com.baz2222.gap2.manager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,11 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.baz2222.gap2.GapGame2;
 import com.baz2222.gap2.listeners.*;
+import com.baz2222.gap2.tools.GPadKeyMap;
 
 import static com.baz2222.gap2.GapGame2.log;
 
@@ -49,7 +53,7 @@ public class UIManager {
 
     public Label leftKeyLabel, rightKeyLabel, upKeyLabel, downKeyLabel, confirmKeyLabel, cancelKeyLabel;
     public Label inputInfoLabel;
-    public TextButton findInputBtn, changeInputBtn;
+    public TextButton changeDeviceInputBtn, changeKeysInputBtn;
     public List<String> list;
     public List.ListStyle listStyle;
     public ScrollPane pane;
@@ -86,7 +90,6 @@ public class UIManager {
         viewport = new FitViewport(game.width, game.height, camera);
         batch = new SpriteBatch();
         stage = new Stage(viewport, batch);
-        Gdx.input.setInputProcessor(stage);
         manager = new AssetManager();
         loadFonts();
         bigFont = manager.get("fonts/big-font.fnt", BitmapFont.class);
@@ -342,17 +345,28 @@ public class UIManager {
         inputTable = new Table();
         inputTable.bottom();
         inputTable.setFillParent(true);
-        changeInputBtn = createTextButton("CHANGE KEYS", game.graphicsManager.menuBtnTex, game.graphicsManager.menuCheckedBtnTex, new ChangeInputBtnListener(game));
-        findInputBtn = createTextButton("FIND DEVICE", game.graphicsManager.menuBtnTex, game.graphicsManager.menuCheckedBtnTex, new FindInputBtnListener(game));
-        inputTable.add(changeInputBtn).padRight(20).padBottom(50).padLeft(100);
-        inputTable.add(findInputBtn).padLeft(60).padBottom(50).padRight(60);
+        changeKeysInputBtn = createTextButton("CHANGE KEYS", game.graphicsManager.menuBtnTex, game.graphicsManager.menuCheckedBtnTex, new ChangeKeysInputBtnListener(game));
+        changeDeviceInputBtn = createTextButton("CHANGE DEVICE", game.graphicsManager.menuBtnTex, game.graphicsManager.menuCheckedBtnTex, new ChangeDeviceInputBtnListener(game));
+        game.inputManager.addISA(changeKeysInputBtn);
+        game.inputManager.addISA(changeDeviceInputBtn);
+        inputTable.add(changeKeysInputBtn).padRight(60).padBottom(20).padLeft(140);
+        inputTable.add(changeDeviceInputBtn).padLeft(70).padBottom(20).padRight(176);
         inputTable.row();
-        leftKeyLabel = new Label("LEFT KEY : NONE", labelStyle);
-        rightKeyLabel = new Label("RIGHT KEY : NONE", labelStyle);
-        upKeyLabel = new Label("UP KEY : NONE", labelStyle);
-        downKeyLabel = new Label("DOWN KEY : NONE", labelStyle);
-        confirmKeyLabel = new Label("OK KEY : NONE", labelStyle);
-        cancelKeyLabel = new Label("BACK KEY : NONE", labelStyle);
+        if(game.inputManager.currentGPadKeyMap != null){
+            leftKeyLabel = new Label("Left Key : " + game.inputManager.currentGPadKeyMap.left, labelStyle);
+            rightKeyLabel = new Label("Right Key : " + game.inputManager.currentGPadKeyMap.right, labelStyle);
+            upKeyLabel = new Label("Up Key : " + game.inputManager.currentGPadKeyMap.up, labelStyle);
+            downKeyLabel = new Label("Down Key : " + game.inputManager.currentGPadKeyMap.down, labelStyle);
+            confirmKeyLabel = new Label("OK Key : " + game.inputManager.currentGPadKeyMap.confirm, labelStyle);
+            cancelKeyLabel = new Label("Back Key : " + game.inputManager.currentGPadKeyMap.cancel, labelStyle);
+        }else{
+            leftKeyLabel = new Label("Left Key : none", labelStyle);
+            rightKeyLabel = new Label("Right Key : none", labelStyle);
+            upKeyLabel = new Label("Up Key : none", labelStyle);
+            downKeyLabel = new Label("Down Key : none", labelStyle);
+            confirmKeyLabel = new Label("OK Key : none", labelStyle);
+            cancelKeyLabel = new Label("Back Key : none", labelStyle);
+        }//else
         VerticalGroup vg = new VerticalGroup();
         vg.addActor(leftKeyLabel);
         vg.addActor(rightKeyLabel);
@@ -360,22 +374,34 @@ public class UIManager {
         vg.addActor(downKeyLabel);
         vg.addActor(confirmKeyLabel);
         vg.addActor(cancelKeyLabel);
-        vg.columnLeft().padBottom(40).padRight(10).padLeft(100);
-        inputTable.add(vg);
+        vg.columnLeft().padBottom(5).padRight(10).padLeft(100);
+        inputTable.add(vg).left().padLeft(60);
         list = new List(listStyle);
-        list.setItems("1sdfsdcsdcdssdsd","2dfdsdsdfsdfddsf","sdfdsfsdfsdfsdfdsfsd3","2dfdsdsdfsdfddsf","sdfdsfsdfsdfsdfdsfsd3","sdfdsfsdfsdfsdfdsfsd3","2dfdsdsdfsdfddsf","sdfdsfsdfsdfsdfdsfsd3","2dfdsdsdfsdfddsf","sdfdsfsdfsdfsdfdsfsd3");
+        Array<String> items = new Array<>();
+        if (game.inputManager.GPads != null) {
+            for(GPadKeyMap map : game.inputManager.GPadKeyMaps){
+                items.add(map.name);
+            }//for
+            list.setItems(items);
+        }//if
         list.setAlignment(Align.left);
         pane = new ScrollPane(list);
-        pane.setBounds(0,0,100,100);
+        items = list.getItems();
+        for (int i = 0; i < items.size; i++) {
+            if(game.inputManager.currentGPadKeyMap != null && items.get(i) == game.inputManager.currentGPadKeyMap.name){
+                list.setSelectedIndex(i);
+            }
+        }
         pane.setSmoothScrolling(false);
-        inputTable.add(pane).padRight(120).padLeft(120).padBottom(10);
-        //inputTable.add(inputLabel).left().padLeft(65).padRight(65);
+        inputTable.add(pane).size(300, 230).left().top().padLeft(50);
         inputTable.row();
-
-        //inputGPADInfoLabel = new Label(game.inputManager.getCurrControllerName(), labelStyle);
-        //inputTable.add(inputGPADInfoLabel).left().padLeft(65).padRight(65);
-        //inputTable.row();
-
+        if(game.inputManager.currentGPad != null){
+            inputInfoLabel = new Label("CURRENT DEVICE: " + game.inputManager.currentGPad.getName(), labelStyle);
+        } else {
+            inputInfoLabel = new Label("CURRENT DEVICE: No connected devices", labelStyle);
+        }//else
+        inputTable.add(inputInfoLabel).left().padLeft(100).padTop(10).padBottom(20).colspan(2);
+        inputTable.row();
         inputBackBtn = createTextButton("BACK", game.graphicsManager.backBtnTex, game.graphicsManager.backCheckedBtnTex, new InputBackBtnListener(game));
         game.inputManager.addISA(inputBackBtn);
         inputTable.add(inputBackBtn).colspan(2).right();

@@ -8,24 +8,25 @@ import com.baz2222.gap2.tools.GameScreen;
 
 import static com.baz2222.gap2.GapGame2.log;
 
-public class ChangeInputBtnListener extends InputListener {
+public class ChangeKeysInputBtnListener extends InputListener {
     private GapGame2 game;
-    public ChangeInputBtnListener(GapGame2 game) {
+    public ChangeKeysInputBtnListener(GapGame2 game) {
         this.game = game;
     }
 
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        log("input back button pressed");
-        game.screenManager.inputScreen.onClose();
-        game.setScreen(game.screenManager.menuScreen);
-        ((GameScreen)game.getScreen()).onOpen();
+        log("change keys button pressed");
+        if(game.inputManager.currentGPad != null){
+            game.screenManager.inputScreen.keyListInFocus = true;
+        }//if
         return super.touchDown(event, x, y, pointer, button);
     }
 
     @Override
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         super.touchUp(event, x, y, pointer, button);
+        game.inputManager.setCurrentISA(0);
     }
 
     @Override
