@@ -165,11 +165,6 @@ public class MenuScreen extends GameScreen {
             switch (menuScreenState) {
                 case "play-button-in-focus":
                     log("play button pressed");
-//                    game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
-//                    game.uiManager.playMenuBtn.fire(game.inputManager.inputEvent);
-//                    game.inputManager.inputEvent.setType(InputEvent.Type.touchUp);
-//                    game.uiManager.playMenuBtn.fire(game.inputManager.inputEvent);
-                    Controllers.removeListener(this);
                     game.soundManager.playSound("bomb", false);
                     game.screenManager.menuScreen.onClose();
                     game.setScreen(game.screenManager.playMenuScreen);
@@ -184,6 +179,7 @@ public class MenuScreen extends GameScreen {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
+        log("Axis moved, axisCode=" + axisCode + " value=" + value);
         return false;
     }
 

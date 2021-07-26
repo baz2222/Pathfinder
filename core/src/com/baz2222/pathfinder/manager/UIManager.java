@@ -49,7 +49,7 @@ public class UIManager {
 
     public Label leftKeyLabel, rightKeyLabel, upKeyLabel, downKeyLabel, confirmKeyLabel, cancelKeyLabel;
     public Label inputInfoLabel;
-    public Label infoSetupLabel, confirmSetupLabel, cancelSetupLabel;
+    public Label infoSetupLabel, confirmSetupLabel, cancelSetupLabel, vAxisSetupLabel, hAxisSetupLabel;
     public TextButton changeDeviceInputBtn, changeKeysInputBtn;
     public List<String> list;
     public List.ListStyle listStyle;
@@ -123,9 +123,15 @@ public class UIManager {
         gamePadSetupTable.setFillParent(true);
         gamePadSetupTable.center();
         infoSetupLabel = new Label("GamePad setup...", labelStyle);
-        confirmSetupLabel = new Label("GamePad CONFIRM button key code : none.", labelStyle);
-        cancelSetupLabel = new Label("GamePad CANCEL button key code : none.", labelStyle);
+        vAxisSetupLabel = new Label("GamePad VERTICAL AXIS key code : none.", labelStyle);
+        hAxisSetupLabel = new Label("GamePad HORIZONTAL AXIS key code : none.", labelStyle);
+        confirmSetupLabel = new Label("GamePad CONFIRM BUTTON key code : none.", labelStyle);
+        cancelSetupLabel = new Label("GamePad CANCEL BUTTON key code : none.", labelStyle);
         gamePadSetupTable.add(infoSetupLabel).pad(10);
+        gamePadSetupTable.row();
+        gamePadSetupTable.add(hAxisSetupLabel).pad(10);
+        gamePadSetupTable.row();
+        gamePadSetupTable.add(vAxisSetupLabel).pad(10);
         gamePadSetupTable.row();
         gamePadSetupTable.add(confirmSetupLabel).pad(10);
         gamePadSetupTable.row();

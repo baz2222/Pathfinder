@@ -20,6 +20,8 @@ public class InputManager {
     public com.baz2222.pathfinder.tools.GPadKeyMap currentGPadKeyMap;
     public Array<com.baz2222.pathfinder.tools.GPadKeyMap> GPadKeyMaps;
 
+    public int vAxisKeyCode;
+    public int hAxisKeyCode;
     public int confirmKeyCode;
     public int cancelKeyCode;
 
