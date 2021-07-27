@@ -17,7 +17,7 @@ public class Pathfinder extends Game {
 
     public UIManager uiManager;
     public Box2DManager box2DManager;
-    public com.baz2222.pathfinder.manager.GraphicsManager graphicsManager;
+    public GraphicsManager graphicsManager;
     public CharacterManager characterManager;
     public MapManager mapManager;
     public InputManager inputManager;
@@ -69,17 +69,17 @@ public class Pathfinder extends Game {
 
     private void createManagers() {
         actionManager = new ActionManager(this);
-        graphicsManager = new com.baz2222.pathfinder.manager.GraphicsManager(this);
+        graphicsManager = new GraphicsManager(this);
         box2DManager = new Box2DManager(this);
         characterManager = new CharacterManager(this);
-        inputManager = new InputManager(this);
         itemManager = new ItemManager(this);
         levelManager = new LevelManager(this);
         screenManager = new ScreenManager(this);
         soundManager = new SoundManager(this);
+        uiManager = new UIManager(this);
+        inputManager = new InputManager(this);
         stateManager = new StateManager(this);
         taskManager = new TaskManager(this);
-        uiManager = new UIManager(this);
         mapManager = new MapManager(this);
     }
 

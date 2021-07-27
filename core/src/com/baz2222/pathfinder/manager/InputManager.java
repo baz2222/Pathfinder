@@ -1,5 +1,6 @@
 package com.baz2222.pathfinder.manager;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -25,8 +26,12 @@ public class InputManager {
     public int confirmKeyCode;
     public int cancelKeyCode;
 
+    public InputMultiplexer mux;
+
     public InputManager(Pathfinder game) {
         this.game = game;
+        mux = new InputMultiplexer();
+        mux.addProcessor(game.uiManager.stage);
         inputSensitiveActorsCount = 0;
         currentISActor = 0;
         inputSensitiveActors = new Array<>();

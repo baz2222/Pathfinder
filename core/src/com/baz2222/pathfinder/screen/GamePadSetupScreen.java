@@ -16,15 +16,32 @@ import static com.baz2222.pathfinder.Pathfinder.log;
 public class GamePadSetupScreen extends GameScreen {
     private Pathfinder game;
     private String state;
+    private float counter;
+    private int countdown;
 
     public GamePadSetupScreen(Pathfinder game) {
         this.game = game;
         state = "";
+        counter = 0;
+        countdown = 5;
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
+        if (state == "wait-for-exit") {
+            counter = counter + Gdx.graphics.getDeltaTime();
+            if (counter > 1f) {
+                countdown--;
+                game.uiManager.infoSetupLabel.setText("CONFIRM to continue or wait for " + countdown + " seconds.");
+                counter = 0f;
+            }
+            if (countdown == 0) {
+                countdown = 5;
+                game.uiManager.infoSetupLabel.setText("Press LEFT or RIGHT ARROW button on your GamePad.");
+                state = "wait-for-hAxis";
+            }//if countdown = 0
+        }//if waiting for exit
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.box2DManager.renderer.render();
@@ -155,7 +172,7 @@ public class GamePadSetupScreen extends GameScreen {
             case "wait-for-cancel-button":
                 game.inputManager.cancelKeyCode = buttonCode;
                 game.uiManager.cancelSetupLabel.setText("Key code for CANCEL BUTTON is : " + buttonCode);
-                game.uiManager.infoSetupLabel.setText("CONFIRM to continue or CANCEL to setup again.");
+                game.uiManager.infoSetupLabel.setText("CONFIRM to continue or wait for " + countdown + " seconds.");
                 state = "wait-for-exit";
                 break;
             default:
@@ -163,10 +180,6 @@ public class GamePadSetupScreen extends GameScreen {
         }//switch state
         if (buttonCode == game.inputManager.confirmKeyCode && state == "wait-for-exit")
             onClose();
-        if (buttonCode == game.inputManager.cancelKeyCode && state == "wait-for-exit") {
-            game.uiManager.infoSetupLabel.setText("Press LEFT or RIGHT ARROW button on your GamePad.");
-            state = "wait-for-hAxis";
-        }//if cancel
         return false;
     }
 

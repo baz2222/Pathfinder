@@ -101,13 +101,13 @@ public class Player extends Actor {
 
     public void jump(float jumpPowerMultiplier) {
         if (currState != CharacterManager.State.jump && currState != CharacterManager.State.fall) {
-            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPowerMultiplier), body.getWorldCenter(), true);
+            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPowerMultiplier), body.getWorldCenter(), false);
             game.soundManager.playSound("jump", false);
         }//if not jumping
     }//jump
 
     public void forceJump(float jumpPowerMultiplier) {
-            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPowerMultiplier), body.getWorldCenter(), true);
+            body.applyLinearImpulse(new Vector2(0f, 6.5f * jumpPowerMultiplier), body.getWorldCenter(), false);
             game.soundManager.playSound("jump", false);
     }//forceJump
 

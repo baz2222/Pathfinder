@@ -37,7 +37,6 @@ public class UIManager {
     public Table pauseTable;
     public Table levelScreenTable;
     public Table menuTable;
-    public Table inputTable;
     public Table playMenuTable;
     public Table levelOverTable;
     public Table selectWorldTable;
@@ -48,12 +47,7 @@ public class UIManager {
     public Label byLabel;
 
     public Label leftKeyLabel, rightKeyLabel, upKeyLabel, downKeyLabel, confirmKeyLabel, cancelKeyLabel;
-    public Label inputInfoLabel;
     public Label infoSetupLabel, confirmSetupLabel, cancelSetupLabel, vAxisSetupLabel, hAxisSetupLabel;
-    public TextButton changeDeviceInputBtn, changeKeysInputBtn;
-    public List<String> list;
-    public List.ListStyle listStyle;
-    public ScrollPane pane;
 
     public Label levelNameLabel;
     public Label levelOverLabel;
@@ -63,7 +57,6 @@ public class UIManager {
     public TextButton levelOverBtn;
     public TextButton nextLevelBtn;
     public TextButton playMenuBackBtn;
-    public TextButton inputBackBtn;
     public TextButton tasksBtn;
     public TextButton tasksBackBtn, selectLevelBackBtn;
     public TextButton newGameBtn;
@@ -92,11 +85,6 @@ public class UIManager {
         midFont = manager.get("fonts/mid-font.fnt", BitmapFont.class);
         labelStyle = new Label.LabelStyle(midFont, Color.WHITE);
         bigLabelStyle = new Label.LabelStyle(bigFont, Color.WHITE);
-        listStyle = new List.ListStyle();
-        listStyle.font = midFont;
-        listStyle.fontColorSelected = Color.YELLOW;
-        listStyle.fontColorUnselected = Color.WHITE;
-        listStyle.selection = new TextureRegionDrawable(game.graphicsManager.menuBtnTex);
     }//stage setup
 
     public void createPauseTable() {
@@ -361,84 +349,6 @@ public class UIManager {
             playMenuTable.remove();
             playMenuTable = null;
             Pathfinder.log("play menu table removed");
-        }//if
-    }
-
-    public void createInputTable() {
-        inputTable = new Table();
-        inputTable.bottom();
-        inputTable.setFillParent(true);
-        changeKeysInputBtn = createTextButton("CHANGE KEYS", game.graphicsManager.menuBtnTex, game.graphicsManager.menuCheckedBtnTex, new com.baz2222.pathfinder.listeners.ChangeKeysInputBtnListener(game));
-        changeDeviceInputBtn = createTextButton("CHANGE DEVICE", game.graphicsManager.menuBtnTex, game.graphicsManager.menuCheckedBtnTex, new com.baz2222.pathfinder.listeners.ChangeDeviceInputBtnListener(game));
-        game.inputManager.addISA(changeKeysInputBtn);
-        game.inputManager.addISA(changeDeviceInputBtn);
-        inputTable.add(changeKeysInputBtn).padRight(60).padBottom(20).padLeft(140);
-        inputTable.add(changeDeviceInputBtn).padLeft(70).padBottom(20).padRight(176);
-        inputTable.row();
-        if(game.inputManager.currentGPadKeyMap != null){
-            leftKeyLabel = new Label("Left Key : " + game.inputManager.currentGPadKeyMap.left, labelStyle);
-            rightKeyLabel = new Label("Right Key : " + game.inputManager.currentGPadKeyMap.right, labelStyle);
-            upKeyLabel = new Label("Up Key : " + game.inputManager.currentGPadKeyMap.up, labelStyle);
-            downKeyLabel = new Label("Down Key : " + game.inputManager.currentGPadKeyMap.down, labelStyle);
-            confirmKeyLabel = new Label("OK Key : " + game.inputManager.currentGPadKeyMap.confirm, labelStyle);
-            cancelKeyLabel = new Label("Back Key : " + game.inputManager.currentGPadKeyMap.cancel, labelStyle);
-        }else{
-            leftKeyLabel = new Label("Left Key : none", labelStyle);
-            rightKeyLabel = new Label("Right Key : none", labelStyle);
-            upKeyLabel = new Label("Up Key : none", labelStyle);
-            downKeyLabel = new Label("Down Key : none", labelStyle);
-            confirmKeyLabel = new Label("OK Key : none", labelStyle);
-            cancelKeyLabel = new Label("Back Key : none", labelStyle);
-        }//else
-        VerticalGroup vg = new VerticalGroup();
-        vg.addActor(leftKeyLabel);
-        vg.addActor(rightKeyLabel);
-        vg.addActor(upKeyLabel);
-        vg.addActor(downKeyLabel);
-        vg.addActor(confirmKeyLabel);
-        vg.addActor(cancelKeyLabel);
-        vg.columnLeft().padBottom(5).padRight(10).padLeft(100);
-        inputTable.add(vg).left().padLeft(60);
-        list = new List(listStyle);
-        Array<String> items = new Array<>();
-        if (game.inputManager.GPads != null) {
-            for(GPadKeyMap map : game.inputManager.GPadKeyMaps){
-                items.add(map.name);
-            }//for
-            list.setItems(items);
-        }//if
-        list.setAlignment(Align.left);
-        pane = new ScrollPane(list);
-        items = list.getItems();
-        for (int i = 0; i < items.size; i++) {
-            if(game.inputManager.currentGPadKeyMap != null && items.get(i) == game.inputManager.currentGPadKeyMap.name){
-                list.setSelectedIndex(i);
-            }
-        }
-        pane.setSmoothScrolling(false);
-        inputTable.add(pane).size(300, 230).left().top().padLeft(50);
-        inputTable.row();
-        if(game.inputManager.currentGPad != null){
-            inputInfoLabel = new Label("CURRENT DEVICE: " + game.inputManager.currentGPad.getName(), labelStyle);
-        } else {
-            inputInfoLabel = new Label("CURRENT DEVICE: No connected devices", labelStyle);
-        }//else
-        inputTable.add(inputInfoLabel).left().padLeft(100).padTop(10).padBottom(20).colspan(2);
-        inputTable.row();
-        inputBackBtn = createTextButton("BACK", game.graphicsManager.backBtnTex, game.graphicsManager.backCheckedBtnTex, new com.baz2222.pathfinder.listeners.InputBackBtnListener(game));
-        game.inputManager.addISA(inputBackBtn);
-        inputTable.add(inputBackBtn).colspan(2).right();
-        game.inputManager.setCurrentISA(0);
-        stage.addActor(inputTable);
-        Pathfinder.log("input table created");
-    }
-
-    public void removeInputTable() {
-        if (inputTable != null) {
-            game.inputManager.removeAllISA();
-            inputTable.remove();
-            inputTable = null;
-            Pathfinder.log("input table removed");
         }//if
     }
 

@@ -8,7 +8,6 @@ public class ScreenManager {
 
     public com.baz2222.pathfinder.screen.MenuScreen menuScreen;
     public com.baz2222.pathfinder.screen.LevelOverScreen levelOverScreen;
-    public com.baz2222.pathfinder.screen.InputScreen inputScreen;
     public com.baz2222.pathfinder.screen.LevelScreen levelScreen;
     public com.baz2222.pathfinder.screen.PauseScreen pauseScreen;
     public com.baz2222.pathfinder.screen.PlayMenuScreen playMenuScreen;
@@ -21,7 +20,6 @@ public class ScreenManager {
         this.game = game;
         menuScreen = new com.baz2222.pathfinder.screen.MenuScreen(game);
         levelOverScreen = new com.baz2222.pathfinder.screen.LevelOverScreen(game);
-        inputScreen = new com.baz2222.pathfinder.screen.InputScreen(game);
         levelScreen = new com.baz2222.pathfinder.screen.LevelScreen(game);
         pauseScreen = new com.baz2222.pathfinder.screen.PauseScreen(game);
         playMenuScreen = new com.baz2222.pathfinder.screen.PlayMenuScreen(game);

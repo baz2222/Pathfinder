@@ -3,6 +3,7 @@ package com.baz2222.pathfinder.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector3;
@@ -20,7 +21,6 @@ public class PlayMenuScreen extends GameScreen {
 
     @Override
     public void render(float delta) {
-        handleInput();
         super.render(delta);
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -30,21 +30,6 @@ public class PlayMenuScreen extends GameScreen {
         game.box2DManager.renderer.render();
         game.box2DManager.debugRenderer.render(game.box2DManager.world, game.uiManager.box2DCamera.combined);
         game.uiManager.stage.draw();
-    }
-
-    public void handleInput(){
-        //move right
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
-            game.inputManager.nextISA();
-        //move left
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
-            game.inputManager.previousISA();
-        //press current button
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
-            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
-            game.soundManager.playSound("bomb", false);
-        }//enter
     }
 
     @Override
@@ -80,6 +65,9 @@ public class PlayMenuScreen extends GameScreen {
 
     @Override
     public void onOpen() {
+        Controllers.addListener(this);
+        game.inputManager.mux.addProcessor(this);
+        Gdx.input.setInputProcessor(game.inputManager.mux);
         game.soundManager.playMusic("menu", true);
         game.mapManager.loadLevelMap(0,0);
         game.uiManager.createPlayMenuTable();
@@ -88,6 +76,8 @@ public class PlayMenuScreen extends GameScreen {
 
     @Override
     public void onClose() {
+        Controllers.removeListener(this);
+        game.inputManager.mux.removeProcessor(this);
         game.soundManager.stopPlayingMusic();
         game.uiManager.removePlayMenuTable();
         game.mapManager.unloadLevelMap();
@@ -96,6 +86,18 @@ public class PlayMenuScreen extends GameScreen {
 
     @Override
     public boolean keyDown(int keycode) {
+        //move right
+        if (keycode == Input.Keys.RIGHT)
+            game.inputManager.nextISA();
+        //move left
+        if (keycode == Input.Keys.LEFT)
+            game.inputManager.previousISA();
+        //press current button
+        if (keycode == Input.Keys.ENTER){
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+        }//enter
         return false;
     }
 
@@ -146,6 +148,11 @@ public class PlayMenuScreen extends GameScreen {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
+        if (buttonCode == game.inputManager.confirmKeyCode){
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+        }//enter
         return false;
     }
 
@@ -156,8 +163,14 @@ public class PlayMenuScreen extends GameScreen {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
+        //move right
+        if (axisCode == game.inputManager.hAxisKeyCode && value == 1)
+            game.inputManager.nextISA();
+        //move left
+        if (axisCode == game.inputManager.hAxisKeyCode && value == -1)
+            game.inputManager.previousISA();
         return false;
-    }
+    }//axis moved
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {

@@ -15,16 +15,13 @@ import static com.baz2222.pathfinder.Pathfinder.log;
 
 public class MenuScreen extends GameScreen {
     private Pathfinder game;
-    private String menuScreenState;
 
     public MenuScreen(Pathfinder game) {
         this.game = game;
-        menuScreenState = "";
     }
 
     @Override
     public void render(float delta) {
-        handleInput();
         super.render(delta);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -35,21 +32,6 @@ public class MenuScreen extends GameScreen {
         game.uiManager.batch.setProjectionMatrix(game.uiManager.box2DCamera.combined);
         game.uiManager.stage.draw();
     }//render
-
-    public void handleInput() {
-//        //move right
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
-//            game.inputManager.nextISA();
-//        //move left
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
-//            game.inputManager.previousISA();
-//        //press current button
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-//            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
-//            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
-//            game.soundManager.playSound("bomb", false);
-//        }//enter
-    }
 
     @Override
     public void resize(int width, int height) {
@@ -85,17 +67,18 @@ public class MenuScreen extends GameScreen {
     @Override
     public void onOpen() {
         Controllers.addListener(this);
-        Gdx.input.setInputProcessor(this);
+        game.inputManager.mux.addProcessor(this);
+        Gdx.input.setInputProcessor(game.inputManager.mux);
         game.soundManager.playMusic("menu", true);
         game.mapManager.loadLevelMap(0, 0);
         game.uiManager.createMenuTable();
-        menuScreenState = "play-button-in-focus";
         log("menu screen opened");
     }
 
     @Override
     public void onClose() {
         Controllers.removeListener(this);
+        game.inputManager.mux.removeProcessor(this);
         game.soundManager.stopPlayingMusic();
         game.uiManager.removeMenuTable();
         game.mapManager.unloadLevelMap();
@@ -104,6 +87,18 @@ public class MenuScreen extends GameScreen {
 
     @Override
     public boolean keyDown(int keycode) {
+        //move right
+        if (keycode == Input.Keys.RIGHT)
+            game.inputManager.nextISA();
+        //move left
+        if (keycode == Input.Keys.LEFT)
+            game.inputManager.previousISA();
+        //press current button
+        if (keycode == Input.Keys.ENTER) {
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+        }//enter
         return false;
     }
 
@@ -154,34 +149,29 @@ public class MenuScreen extends GameScreen {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
+        if (buttonCode == game.inputManager.confirmKeyCode) {
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.inputManager.getCurrentISA().fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+        }//enter
         return false;
     }
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        log("confirmKeyCode = " + game.inputManager.confirmKeyCode);
-        log("buttonCode = " + buttonCode);
-        if (game.inputManager.confirmKeyCode == buttonCode) {
-            switch (menuScreenState) {
-                case "play-button-in-focus":
-                    log("play button pressed");
-                    game.soundManager.playSound("bomb", false);
-                    game.screenManager.menuScreen.onClose();
-                    game.setScreen(game.screenManager.playMenuScreen);
-                    ((GameScreen)game.getScreen()).onOpen();
-                    break;
-                default:
-                    break;
-            }//switch if ok pressed
-        }//confirm button pressed
         return false;
     }
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
-        log("Axis moved, axisCode=" + axisCode + " value=" + value);
+        //move right
+        if (axisCode == game.inputManager.hAxisKeyCode && value == 1)
+            game.inputManager.nextISA();
+        //move left
+        if (axisCode == game.inputManager.hAxisKeyCode && value == -1)
+            game.inputManager.previousISA();
         return false;
-    }
+    }//axisMoved
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {

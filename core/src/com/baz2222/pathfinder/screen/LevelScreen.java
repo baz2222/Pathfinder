@@ -3,47 +3,32 @@ package com.baz2222.pathfinder.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.baz2222.pathfinder.Pathfinder;
 import com.baz2222.pathfinder.tools.GameScreen;
 
+import static com.baz2222.pathfinder.Pathfinder.log;
+
 public class LevelScreen extends GameScreen {
     private Pathfinder game;
+    private boolean isPlayerRunRight = false;
+    private boolean isPlayerRunLeft = false;
 
     public LevelScreen(Pathfinder game) {
         this.game = game;
     }
 
-    public void handleInput() {
-        //jump
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || (Gdx.input.isTouched() && Gdx.input.getDeltaY() < -10)) {
-            if (game.characterManager.player.ability == "jump")
-                game.characterManager.player.jump(1.5f);
-            else
-                game.characterManager.player.jump(1f);
-        }//move right
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || (Gdx.input.isTouched() && Gdx.input.getDeltaX() > 10))
-            game.characterManager.player.runRight();
-        //move left
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || (Gdx.input.isTouched() && Gdx.input.getDeltaX() < -10))
-            game.characterManager.player.runLeft();
-        //pause
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
-            game.uiManager.pauseBtn.fire(game.inputManager.inputEvent);
-            game.soundManager.playSound("bomb", false);
-        }
-    }
-
     @Override
     public void render(float delta) {
+        handleRunning();
         if (game.box2DManager.stopWorldStep == true) {
             game.levelManager.removeLevelActors();
         } else {
-            handleInput();
             game.uiManager.camera.update();
             game.uiManager.box2DCamera.update();
             game.uiManager.batch.setProjectionMatrix(game.uiManager.box2DCamera.combined);
@@ -55,7 +40,14 @@ public class LevelScreen extends GameScreen {
             game.box2DManager.world.step(1 / 60f, 6, 4);
             game.uiManager.stage.draw();
         }
-    }
+    }//render
+
+    private void handleRunning() {
+        if (isPlayerRunRight)
+            game.characterManager.player.runRight();
+        if (isPlayerRunLeft)
+            game.characterManager.player.runLeft();
+    }//handle running
 
     @Override
     public void resize(int width, int height) {
@@ -92,7 +84,10 @@ public class LevelScreen extends GameScreen {
 
     @Override
     public void onOpen() {
-
+        Controllers.addListener(this);
+        game.inputManager.mux.addProcessor(this);
+        Gdx.input.setInputProcessor(game.inputManager.mux);
+        //=======================
         game.box2DManager.stopWorldStep = false;
         //=======================
         game.soundManager.playMusic("world" + game.currWorld, true);
@@ -111,6 +106,9 @@ public class LevelScreen extends GameScreen {
 
     @Override
     public void onClose() {
+        Controllers.removeListener(this);
+        game.inputManager.mux.removeProcessor(this);
+        //======================
         game.box2DManager.stopWorldStep = true;
         //======================
         game.soundManager.stopPlayingMusic();
@@ -124,11 +122,44 @@ public class LevelScreen extends GameScreen {
 
     @Override
     public boolean keyDown(int keycode) {
+        //jump
+        if (keycode == Input.Keys.UP) {
+            if (game.characterManager.player.ability == "jump") {
+                game.characterManager.player.jump(1.5f);
+            } else {
+                game.characterManager.player.jump(1f);
+            }//else
+            return true;
+        }
+        //move right
+        if (keycode == Input.Keys.RIGHT) {
+            isPlayerRunLeft = false;
+            isPlayerRunRight = true;
+            return true;
+        }//if
+        //move left
+        if (keycode == Input.Keys.LEFT) {
+            isPlayerRunLeft = true;
+            isPlayerRunRight = false;
+            return true;
+        }//if
+        //pause
+        if (keycode == Input.Keys.ESCAPE) {
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.uiManager.pauseBtn.fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+            return true;
+        }
         return false;
-    }
+    }//key down
 
     @Override
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.RIGHT || keycode == Input.Keys.LEFT) {
+            isPlayerRunLeft = false;
+            isPlayerRunRight = false;
+            return true;
+        }//if
         return false;
     }
 
@@ -149,6 +180,22 @@ public class LevelScreen extends GameScreen {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        //jump
+        if (Gdx.input.getDeltaY() < -20) {
+            if (game.characterManager.player.ability == "jump") {
+                game.characterManager.player.jump(1.5f);
+            } else {
+                game.characterManager.player.jump(1f);
+            }//else
+        }//if
+        //runRight
+        if (Gdx.input.getDeltaX() > 10) {
+            game.characterManager.player.runRight();
+        }//if
+        //runLeft
+        if (Gdx.input.getDeltaX() < -10) {
+            game.characterManager.player.runLeft();
+        }//if
         return false;
     }
 
@@ -174,8 +221,20 @@ public class LevelScreen extends GameScreen {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
+        if (buttonCode == game.inputManager.cancelKeyCode) {
+            game.inputManager.inputEvent.setType(InputEvent.Type.touchDown);
+            game.uiManager.pauseBtn.fire(game.inputManager.inputEvent);
+            game.soundManager.playSound("bomb", false);
+            return true;
+        }//if cancel
+        if (buttonCode == game.inputManager.confirmKeyCode) {
+            if (game.characterManager.player.ability == "jump")
+                game.characterManager.player.jump(1.5f);
+            else
+                game.characterManager.player.jump(1f);
+        }//if confirm
         return false;
-    }
+    }//button down
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
@@ -184,6 +243,27 @@ public class LevelScreen extends GameScreen {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
+//        //jump
+//        if (axisCode == game.inputManager.vAxisKeyCode && value == -1) {
+//            if (game.characterManager.player.ability == "jump")
+//                game.characterManager.player.jump(1.5f);
+//            else
+//                game.characterManager.player.jump(1f);
+//        }//if
+        //move right
+        if (axisCode == game.inputManager.hAxisKeyCode && value == 1) {
+            isPlayerRunLeft = false;
+            isPlayerRunRight = true;
+        }//if
+        //move left
+        if (axisCode == game.inputManager.hAxisKeyCode && value == -1) {
+            isPlayerRunLeft = true;
+            isPlayerRunRight = false;
+        }//if
+        if (Math.abs(value) != 1) {
+            isPlayerRunLeft = false;
+            isPlayerRunRight = false;
+        }//if axis button is released
         return false;
     }
 
